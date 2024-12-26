@@ -6,10 +6,17 @@
 
 import pyautogui as pag 
 import time
+import datetime
 from csv_reader import CSVReader
+from time_to_send import TimeToSend
+
+time_to_send = [
+    TimeToSend(priority=1, hour=8, minute=0),
+    TimeToSend(priority=2, hour=12, minute=0),
+    TimeToSend(priority=3, hour=26, minute=0),
+]
 
 contacts = []
-
 
 def open_whatsapp():
     pag.press("winleft")
@@ -18,6 +25,7 @@ def open_whatsapp():
     time.sleep(1)
     pag.press("enter")
     time.sleep(4)
+    print("WhatsApp opened")
 
 # Call this function ONLY after open_whatsapp() has been called
 def text_contact(contact):
@@ -37,6 +45,14 @@ def text_contact(contact):
     pag.press("enter")
     time.sleep(1)
 
+def get_generic_message(priority, nickname):
+    if priority == 1:
+        return f"Feliz año nuevoo {nickname}!! Sos una persona muy importante para mi, espero que este 2025 arranque muy bien para voss. Un fuerte abrazoo!"
+    elif priority == 2:
+        return f"Feliz añoo {nickname}!! Que empieces muy bien este 2025. Un fuerte abrazo"
+    elif priority == 3:
+        return f"{nickname}, feliz año! Un abrazo"
+
 
 def main(): 
     reader = CSVReader("contacts.csv")
@@ -46,6 +62,8 @@ def main():
 
     for contact in contacts:
         text_contact(contact)
+
+    current_time = datetime.datetime.now()
 
 
 if __name__ == "__main__":
