@@ -6,11 +6,9 @@
 
 import pyautogui as pag 
 import time
+from csv_reader import CSVReader
 
-contacts = [
-    {"name": "Guillermo Acquistapace", "nickname": "Guillee"},
-    {"name": "Notas Personales", "nickname": "Notitas"}
-]
+contacts = []
 
 
 def open_whatsapp():
@@ -41,10 +39,14 @@ def text_contact(contact):
 
 
 def main(): 
+    reader = CSVReader("contacts.csv")
+    contacts = reader.read_contacts()
+
     open_whatsapp()
 
     for contact in contacts:
         text_contact(contact)
+
 
 if __name__ == "__main__":
     main()
