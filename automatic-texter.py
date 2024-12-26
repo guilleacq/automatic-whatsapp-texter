@@ -7,8 +7,11 @@
 import pyautogui as pag 
 import time
 
-contacts = ["Guillermo Acquistapace", "Notas Personales"]
-contact_nicknames = ["yop", "guille"]
+contacts = [
+    {"name": "Guillermo Acquistapace", "nickname": "Guillee"},
+    {"name": "Notas Personales", "nickname": "Notitas"}
+]
+
 
 def open_whatsapp():
     pag.press("winleft")
@@ -19,31 +22,29 @@ def open_whatsapp():
     time.sleep(4)
 
 # Call this function ONLY after open_whatsapp() has been called
-def text_contact(contact_name, contact_nickname):
+def text_contact(contact):
     pag.hotkey("ctrl", "f")
     time.sleep(1)
     pag.hotkey("ctrl", "a")
     pag.press("delete")
-    pag.typewrite(contact_name)
+    pag.typewrite(contact["name"])
     time.sleep(1)
     pag.press("tab")
     pag.press("enter")
     time.sleep(1)
 
     # Message logic
-    pag.typewrite("Hola, "+contact_nickname)
+    message = "Hola, "+contact["nickname"] # TODO: Esto se va a ir a otra clase
+    pag.typewrite(message)
     pag.press("enter")
     time.sleep(1)
 
 
+def main(): 
+    open_whatsapp()
 
+    for contact in contacts:
+        text_contact(contact)
 
-
-open_whatsapp()
-
-for i in range(len(contacts)):
-    text_contact(contacts[i], contact_nicknames[i])
-
-
-
-
+if __name__ == "__main__":
+    main()
