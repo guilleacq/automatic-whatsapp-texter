@@ -1,23 +1,20 @@
 # Author: guilleacq
-# WARNING: This code may work differently in different systems and responses may vary based on PC performance / operating system. 
+# WARNING: This code may work differently in different systems and responses may vary based on PC performance / operating system.
 # I am not responsible for any damage you may cause to your reputation/pc if this works in an unexpected way
-# Also, by using this YOU ARE LETTING A PROGRAM MANAGE YOUR COMPUTER and it CANNOT be stopped UNLESS you force stop the process (Ctrl + C). 
+# Also, by using this YOU ARE LETTING A PROGRAM MANAGE YOUR COMPUTER and it CANNOT be stopped UNLESS you force stop the process (Ctrl + C).
 # --------------------------------------------------- USE AT YOUR OWN RISK ----------------------------------------------
-
-import pyautogui as pag 
+import pyautogui as pag
 import time
 import datetime
 from csv_reader import CSVReader
 from time_to_send import TimeToSend
 
-# List of times to send messages
+# List of times to send messages (00:02, 00:17, 00:49)
 time_to_send = [
-    TimeToSend(priority=1, hour=0, minute=8),
-    TimeToSend(priority=2, hour=0, minute=12),
-    TimeToSend(priority=3, hour=0, minute=26),
+    TimeToSend(priority=1, hour=0, minute=2),
+    TimeToSend(priority=2, hour=0, minute=17),
+    TimeToSend(priority=3, hour=0, minute=49),
 ]
-
-contacts = []
 
 def open_whatsapp():
     pag.press("winleft")
@@ -28,7 +25,6 @@ def open_whatsapp():
     time.sleep(4)
     print("WhatsApp opened")
 
-# Call this function ONLY after open_whatsapp() has been called
 def text_contact(contact):
     pag.hotkey("ctrl", "f")
     time.sleep(1)
@@ -39,34 +35,67 @@ def text_contact(contact):
     pag.press("tab")
     pag.press("enter")
     time.sleep(1)
-
-    # Message logic
-    message = get_generic_message(contact["priority"], contact["nickname"])
+    
+    # Get appropriate message (custom or generic)
+    message = get_message(contact)
     pag.typewrite(message)
     pag.press("enter")
     time.sleep(1)
+    print(f"Message sent to {contact['name']}")
 
-# TODO: Fix this (can't type letter ñ)
+def get_message(contact):
+    # Check if there's a custom message
+    if contact["customMessage"].strip():
+        return contact["customMessage"]
+    
+    # If no custom message, use generic based on priority
+    return get_generic_message(contact["priority"], contact["nickname"])
+
 def get_generic_message(priority, nickname):
     if priority == 1:
-        return f"Feliz año nuevoo {nickname}!! Sos una persona muy importante para mi, espero que este año sea increible para vos. Un abrazo gigante!"
+        return f"Feliz 2025 {nickname}!! Sos una persona muy importante para mi, espero que este sea un increible para vos. Un abrazo gigante!"
     elif priority == 2:
-        return f"Feliz añoo {nickname}!! Que empieces muy bien este 2025"
+        return f"Feliz 2025 {nickname}!! Que empieces muy bien este nuevo ciclo"
     elif priority == 3:
         return f"{nickname}, feliz 2025! Un abrazo"
 
+def wait_until(hour, minute):
+    target_time = datetime.datetime.now().replace(hour=hour, minute=minute, second=0, microsecond=0)
+    current_time = datetime.datetime.now()
+    
+    # If target time is in the past for today, set it for tomorrow
+    if current_time >= target_time:
+        target_time += datetime.timedelta(days=1)
+    
+    # Wait until the specified time
+    wait_seconds = (target_time - datetime.datetime.now()).total_seconds()
+    if wait_seconds > 0:
+        print(f"Waiting until {hour:02d}:{minute:02d}")
+        time.sleep(wait_seconds)
 
-def main(): 
+def main():
+    # Read contacts from CSV
     reader = CSVReader("contacts.csv")
     contacts = reader.read_contacts()
-
-    open_whatsapp()
-
+    
+    # Group contacts by priority
+    priority_groups = {1: [], 2: [], 3: []}
     for contact in contacts:
-        text_contact(contact)
-
-    # current_time = datetime.datetime.now()
-
+        priority_groups[contact["priority"]].append(contact)
+    
+    # Open WhatsApp once at the start
+    open_whatsapp()
+    
+    # Process each priority group at its specified time
+    for time_slot in time_to_send:
+        # Wait until the specified time for this priority
+        wait_until(time_slot.hour, time_slot.minute)
+        
+        # Send messages to all contacts in this priority group
+        priority_contacts = priority_groups[time_slot.priority]
+        print(f"Sending messages to priority {time_slot.priority} contacts")
+        for contact in priority_contacts:
+            text_contact(contact)
 
 if __name__ == "__main__":
     main()
