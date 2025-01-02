@@ -39,7 +39,7 @@ def text_contact(contact):
     # Get appropriate message (custom or generic)
     message = get_message(contact)
     pag.typewrite(message)
-    # pag.press("enter")
+    pag.press("enter")
     time.sleep(1)
     print(f"Message sent to {contact['name']}")
 
