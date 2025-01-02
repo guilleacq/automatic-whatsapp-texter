@@ -12,8 +12,8 @@ from time_to_send import TimeToSend
 # List of times to send messages (00:02, 00:17, 00:49)
 time_to_send = [
     TimeToSend(priority=1, hour=0, minute=2),
-    TimeToSend(priority=2, hour=0, minute=17),
-    TimeToSend(priority=3, hour=0, minute=49),
+    TimeToSend(priority=2, hour=0, minute=12),
+    TimeToSend(priority=3, hour=0, minute=41),
 ]
 
 def open_whatsapp():
@@ -39,7 +39,7 @@ def text_contact(contact):
     # Get appropriate message (custom or generic)
     message = get_message(contact)
     pag.typewrite(message)
-    pag.press("enter")
+    # pag.press("enter")
     time.sleep(1)
     print(f"Message sent to {contact['name']}")
 
@@ -53,9 +53,9 @@ def get_message(contact):
 
 def get_generic_message(priority, nickname):
     if priority == 1:
-        return f"Feliz 2025 {nickname}!! Sos una persona muy importante para mi, espero que este sea un increible para vos. Un abrazo gigante!"
+        return f"Feliz 2025 {nickname}!!! Sos una persona muy importante para mi, posta espero que arranques este nuevo ciclo con todo. Un abrazo gigantee!"
     elif priority == 2:
-        return f"Feliz 2025 {nickname}!! Que empieces muy bien este nuevo ciclo"
+        return f"Feliz 2025 {nickname}!! Que empieces muy bien este nuevo ciclo, un fuerte abrazoo"
     elif priority == 3:
         return f"{nickname}, feliz 2025! Un abrazo"
 
